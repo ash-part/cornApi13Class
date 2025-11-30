@@ -6,7 +6,7 @@ import tensorflow as tf
 
 app = FastAPI()
 
-# ✅ Corn disease class array
+# Corn disease class array
 class_names = [
     "Anthracnose Stalk Rot",
     "Aspergillus Ear Rot",
@@ -23,23 +23,20 @@ class_names = [
     "YellowLeafSpot"
 ]
 
-# ✅ Load saved model from current directory
+# Load saved model
 MODEL_PATH = os.path.join(os.getcwd(), "corn_disease_model.h5")
 model = tf.keras.models.load_model(MODEL_PATH)
 
-@api.post("/predict")
+@app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
 
-    # ✅ Resize image
     img = Image.open(io.BytesIO(contents)).convert("RGB")
     img = img.resize((224, 224))
 
-    # ✅ Normalize
     image_arr = np.array(img) / 255.0
     image_arr = np.expand_dims(image_arr, axis=0)
 
-    # Inference
     preds = model.predict(image_arr)
     idx = int(np.argmax(preds, axis=1)[0])
     confidence = float(np.max(preds))
@@ -49,3 +46,9 @@ async def predict(file: UploadFile = File(...)):
         "confidence": confidence,
         "probabilities": {name: float(preds[0][i]) for i, name in enumerate(class_names)}
     }
+
+# Required for Render
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
