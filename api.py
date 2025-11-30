@@ -34,7 +34,8 @@ async def predict(file: UploadFile = File(...)):
     img = Image.open(io.BytesIO(contents)).convert("RGB")
     img = img.resize((224, 224))
 
-    image_arr = np.array(img) / 255.0
+    image_arr = np.array(img)
+    image_arr = preprocess_input(image_arr)
     image_arr = np.expand_dims(image_arr, axis=0)
 
     preds = model.predict(image_arr)
@@ -52,3 +53,4 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
