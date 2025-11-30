@@ -1,8 +1,9 @@
 fastapi
 uvicorn
-tensorflow
+tensorflow-cpu
 pillow
 numpy
 scikit-learn
 pandas
 python-multipart
+
