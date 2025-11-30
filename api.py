@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import os, io
 import tensorflow as tf
+from tensorflow.keras.applications.efficientnet import preprocess_input
 
 app = FastAPI()
 
@@ -53,4 +54,5 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
 
